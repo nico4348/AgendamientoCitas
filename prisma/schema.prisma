@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model historialconversacion {
+  id            Int      @id @default(autoincrement())
+  numeroUsuario String   @unique(map: "HistorialConversacion_numeroUsuario_key")
+  tratDatos     String   @default("")
+  historial     Json?
+  agendamiento  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  citaAgendada  Boolean  @default(false)
+}
+
+model cita {
+  id_cita          Int                @id @default(autoincrement())
+  fecha            DateTime
+  hora             DateTime           @db.Time(0)
+  lugar            String             @db.VarChar(50)
+  pacienteId       BigInt
+  personalId       BigInt
+  consultorioId    Int
+  consultorio      consultorio        @relation(fields: [consultorioId], references: [id], map: "Cita_consultorioId_fkey")
+  paciente         paciente           @relation(fields: [pacienteId], references: [numero_documento], map: "Cita_pacienteId_fkey")
+  personal         personal           @relation(fields: [personalId], references: [numero_documento], map: "Cita_personalId_fkey")
+  historialclinico historialclinico[]
+
+  @@index([consultorioId], map: "Cita_consultorioId_fkey")
+  @@index([pacienteId], map: "Cita_pacienteId_fkey")
+  @@index([personalId], map: "Cita_personalId_fkey")
+}
+
+model consultorio {
+  id     Int    @id @default(autoincrement())
+  nombre String @db.VarChar(50)
+  estado String @db.VarChar(20)
+  cita   cita[]
+}
+
+model historialclinico {
+  id              Int      @id @default(autoincrement())
+  motivo_consulta String   @db.VarChar(100)
+  remitido        String   @db.VarChar(100)
+  diagnostico     String   @db.VarChar(200)
+  tratamiento     String   @db.VarChar(200)
+  estado_proceso  String   @db.VarChar(50)
+  pacienteId      BigInt
+  citaId          Int
+  cita            cita     @relation(fields: [citaId], references: [id_cita], map: "HistorialClinico_citaId_fkey")
+  paciente        paciente @relation(fields: [pacienteId], references: [numero_documento], map: "HistorialClinico_pacienteId_fkey")
+
+  @@index([citaId], map: "HistorialClinico_citaId_fkey")
+  @@index([pacienteId], map: "HistorialClinico_pacienteId_fkey")
+}
+
+model paciente {
+  numero_documento BigInt             @id
+  tipo_documento   String             @db.VarChar(10)
+  nombre           String             @db.VarChar(50)
+  telefono         String             @db.VarChar(50)
+  genero           String             @db.VarChar(50)
+  estrato          String             @db.VarChar(50)
+  barrio           String             @db.VarChar(50)
+  localidad        String             @db.VarChar(50)
+  escolaridad      String             @db.VarChar(50)
+  disponibilidad   String             @db.VarChar(100)
+  cita             cita[]
+  historialclinico historialclinico[]
+}
+
+model personal {
+  numero_documento BigInt  @id
+  tipo_documento   String  @db.VarChar(50)
+  nombre           String  @db.VarChar(50)
+  genero           String  @db.VarChar(50)
+  estrato          String  @db.VarChar(50)
+  barrio           String  @db.VarChar(50)
+  localidad        String  @db.VarChar(50)
+  es_profesional   Boolean @default(false)
+  turno            String  @db.VarChar(20)
+  cita             cita[]
+}
