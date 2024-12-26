@@ -1,10 +1,16 @@
 import { Elysia } from 'elysia'
 import { swagger } from '@elysiajs/swagger'
 
-new Elysia()
+// Configuración de la app
+const app = new Elysia()
 	.use(swagger())
 
-	.post('/login', async ({ request }) => {})
-	.get('/main', Usuario)
+	//un get que devuelve un string
+	.get('/', 'hola mundo')
+	.listen(3005)
 
-	.listen(3000)
+const serverUrl = 'http://localhost:3005'
+console.log(`🦊 Server running at ${serverUrl}`)
+app.routes.forEach((route) => {
+	console.log(` ${route.method.toUpperCase()} ${serverUrl}${route.path}`)
+})
