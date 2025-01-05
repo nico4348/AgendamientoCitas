@@ -1,10 +1,11 @@
-import { addDay, parse, format, sameDay, date } from '@formkit/tempo'
+import { addDay, parse, format, hourStart, hourEnd, date } from '@formkit/tempo'
 
 const date1 = new Date()
-console.log(typeof date1)
+console.log(date1)
 const addDate = addDay(date1, 2)
 
 console.log(addDate, '\n')
 
-const date2 = format(addDate, 'full')
+const hourTerminada = hourStart(addDate)
+const date2 = format(hourTerminada, { date: 'full', time: 'full' })
 console.log(date2)

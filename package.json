@@ -17,6 +17,7 @@
 		"@formkit/tempo": "^0.1.2",
 		"@prisma/client": "^6.0.1",
 		"elysia": "^1.1.26",
+		"openai": "^4.77.3",
 		"prisma": "^6.0.1"
 	}
 }
